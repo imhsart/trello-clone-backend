@@ -49,6 +49,7 @@ const UserSchema = new mongoose.Schema({
     trim: true
   }, 
   gender: {
+    type: String,
     enum: {
        values: ["male", "female", "others"],
        message: '{VALUE} is not a valid gender'
@@ -63,7 +64,7 @@ const UserSchema = new mongoose.Schema({
   }
 }, {timestamps: true})
 
-const User = mongoose.Model('User', UserSchema)
+const User = mongoose.model('User', UserSchema)
 module.exports = {
   User
 }
