@@ -38,15 +38,15 @@ const UserSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  profile_pic: {
+  profilePicture: {
     type: String,
     trim: true
   },
-  tasks: [],
   DOB: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    immutable: true
   }, 
   gender: {
     type: String,
@@ -54,7 +54,8 @@ const UserSchema = new mongoose.Schema({
        values: ["male", "female", "others"],
        message: '{VALUE} is not a valid gender'
     },
-    required: true
+    required: true,
+    immutable: true
   }, 
   organization: {
     type: String,
