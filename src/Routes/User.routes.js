@@ -110,6 +110,33 @@ router.patch("/edit",isLoggedIn, async (req, res) => {
   }
 })
 
+//change password api
+
+router.patch("/change-pass", isLoggedIn, async (req, res) => {
+  try{
+    const {oldPassword, newPassword} = req.body
+    const loggedInUser = req.user
+    let isPassMatched = await bcrypt.compare(oldPassword, loggedInUser.password)
+    if(!isPassMatched){
+      throw new Error("Password does not match. Try again!")
+    }
+    const isStrongNewPass = validator.isStrongPassword(newPassword)
+    if(!isStrongNewPass){
+      throw new Error("Please create a strong new password.")
+    }
+    const saltRounds = 10
+    const newHashedPass = await bcrypt.hash(newPassword, saltRounds)
+    loggedInUser.password = newHashedPass
+    await loggedInUser.save()
+    res.status(200).json({
+      message: "Password changed successfully!"
+    })
+  }catch(error){
+    res.status(400).json({
+      "message": error.message
+    })
+  }
+})
 
 //export router
 module.exports = {
