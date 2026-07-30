@@ -65,6 +65,9 @@ router.post("/login", async (req, res) => {
     //generate token
     let token = jsonwebtoken.sign({_id: isUserFound._id}, process.env.JWT_SECRET_KEY, {expiresIn: "2d"})
     res.status(200).cookie("token", token, {
+      // secure : true,
+      // httpOnly : true,
+      // sameSite : "strict",
       maxAge: 48 * 60 * 60 * 1000
     }).json({message: "User logged in successfully!"})
   }

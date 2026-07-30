@@ -16,7 +16,7 @@ const TaskSchema = new mongoose.Schema({
   priority: {
     type: String,
     enum: {
-      value: ["low", "medium", "high"],
+      values: ["low", "medium", "high"],
       message: "{VALUE} is not a valid priority type"
     },
     default: "low"
@@ -24,7 +24,7 @@ const TaskSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: {
-      value: ["pending", "inprogress", "complete"],
+      values: ["pending", "inprogress", "complete"],
       message: "{VALUE} is not a valid status type"
     },
     default: "pending"
