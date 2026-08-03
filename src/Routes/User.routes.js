@@ -90,19 +90,26 @@ router.patch("/edit",isLoggedIn, async (req, res) => {
   try{
     const loggedInUser = req.user
     const { username, profilePicture, organization } = req.body
-    loggedInUser.username = username || loggedInUser.username
-    loggedInUser.profilePicture = profilePicture || loggedInUser.profilePicture
-    loggedInUser.organization = organization || loggedInUser.organization
-    await loggedInUser.save()
+    if(!username?.trim() || !profilePicture?.trim() || !organization?.trim()){
+      throw new Error("Please enter all fields!")
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      loggedInUser._id
+    , {
+      username,
+      profilePicture,
+      organization
+    }, {
+      returnDocument: "after",
+      runValidators: true
+    })
 
     res.status(200).json({
       "message": "Updated details successfully!",
       "data": {
-        firstname: loggedInUser.firstname,
-        lastname: loggedInUser.lastname,
-        username: loggedInUser.username,
-        profilePicture: loggedInUser.profilePicture,
-        organization: loggedInUser.organization
+        username: updatedUser.username,
+        profilePicture: updatedUser.profilePicture,
+        organization: updatedUser.organization
       }
     })
   }

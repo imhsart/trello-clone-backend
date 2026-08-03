@@ -7,11 +7,12 @@ const { TaskRouter } = require('./Routes/Task.routes.js')
 const cp = require('cookie-parser')
 const cors = require('cors')
 
+
+const app = express()
 app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   origin: ['http://localhost:5173']
 }))
-const app = express()
 app.use(express.json())
 app.use(cp())
 app.use("/api/users",UserRouter)
