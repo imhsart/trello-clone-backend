@@ -23,7 +23,8 @@ const UserSchema = new mongoose.Schema({
     minLength: 8,
     maxLength: 20,
     unique: true,
-    trim: true
+    trim: true,
+    match: [/^[^\s]+$/, "Username cannot contain spaces"]
   }, 
   email: {
     type: String,

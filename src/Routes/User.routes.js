@@ -14,7 +14,9 @@ router.post("/signup", async (req, res) => {
     const {firstname, lastname, username, email, password, DOB, gender} = req.body
 
     //validate important fields
-    const isValidDate = validator.isDate(DOB)
+    const isValidDate = validator.isDate(DOB, {
+      format: 'YYYY-MM-DD'
+    })
     if(!isValidDate){
       throw new Error ("Please enter a valid date of birth")
     }
@@ -35,7 +37,7 @@ router.post("/signup", async (req, res) => {
       message: "User created successfully!"
     })
   }catch(error){
-    res.status(400).json({'Endpoint error': error.message})
+    res.status(400).json({'Error': error.message})
   }
 })
 
@@ -72,7 +74,7 @@ router.post("/login", async (req, res) => {
     }).json({message: "User logged in successfully!"})
   }
   catch(error){
-    res.status(400).json({"Endpoint error:": error.message})
+    res.status(400).json({"Error:": error.message})
   }
 })
 
