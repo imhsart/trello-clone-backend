@@ -150,6 +150,29 @@ router.patch("/change-pass", isLoggedIn, async (req, res) => {
   }
 })
 
+//get user data
+
+router.get("/get-user-data", isLoggedIn, (req, res) => {
+  try{
+    const { firstname, lastname, username, profilePicture } = req.user
+    res.status(200).json({
+      "message": `Welcome back, ${username}!`,
+      data: {
+        firstname,
+        lastname, 
+        username, 
+        profilePicture
+      }
+    })
+  }
+  catch(error){
+    res.status(500).json({
+      "message": error.message
+    })
+  }
+})
+
+
 //export router
 module.exports = {
   UserRouter: router
