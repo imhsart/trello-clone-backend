@@ -11,7 +11,7 @@ const {errorHandler} = require('./Middlewares/errorHandler.js')
 const app = express()
 app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  origin: ['http://localhost:5173'],
+  origin: ['http://localhost:5173', "https://taskflow-vwwb.onrender.com"],
   credentials: true
 }))
 app.use(express.json())
