@@ -69,7 +69,7 @@ router.post("/login", async (req, res, next) => {
     res.status(200).cookie("token", token, {
       secure : true,
       httpOnly : true,
-      sameSite : "strict",
+      sameSite : "none",
       maxAge: 48 * 60 * 60 * 1000
     }).json({message: "User logged in successfully!"})
   }
@@ -84,7 +84,7 @@ router.post("/logout", async (req, res) => {
   res.cookie("token", null, {
     secure : true,
     httpOnly : true,
-    sameSite : "strict",
+    sameSite : "none",
     maxAge: 0
   }).json({"message": "Logged out successfully!"})
 })
@@ -152,7 +152,7 @@ router.patch("/change-pass", isLoggedIn, async (req, res, next) => {
     res.cookie("token", null, {
       secure : true,
       httpOnly : true,
-      sameSite : "strict",
+      sameSite : "none",
       maxAge: 0
     }).status(200).json({
       message: "Password changed successfully."
