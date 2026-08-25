@@ -6,7 +6,7 @@ const { Task } = require("../Models/Task.schema.js")
 
 //create task api
 
-router.post("/create", isLoggedIn, async (req, res) => {
+router.post("/create", isLoggedIn, async (req, res, next) => {
   try{
     const {title, description, priority, status} = req.body
     if(!title.trim() || !description.trim() || !priority.trim() || !status.trim()){
@@ -31,16 +31,14 @@ router.post("/create", isLoggedIn, async (req, res) => {
     })
   }
   catch(error){
-    res.status(400).json({
-      message: error.message
-    })
+    next(error)
   }
 })
 
 
 //get all tasks api
 
-router.get("/get", isLoggedIn, async (req, res) => {
+router.get("/get", isLoggedIn, async (req, res, next) => {
   try{
     const allTasks = await Task.find({
       author: req.user._id
@@ -50,16 +48,14 @@ router.get("/get", isLoggedIn, async (req, res) => {
     })
   }
   catch(error){
-    res.status(400).json({
-      message: error.message
-    })
+    next(error)
   }
 })
 
 
 //get particular task api
 
-router.get("/get/:id", isLoggedIn, async (req, res) => {
+router.get("/get/:id", isLoggedIn, async (req, res, next) => {
   try{
     const { id } = req.params
     const foundTask = await Task.findOne({
@@ -74,15 +70,13 @@ router.get("/get/:id", isLoggedIn, async (req, res) => {
     })
   }
   catch(error){
-    res.status(400).json({
-      message: error.message
-    })
+    next(error)
   }
 })
 
 // delete task api
 
-router.delete("/delete/:id", isLoggedIn, async (req, res) => {
+router.delete("/delete/:id", isLoggedIn, async (req, res, next) => {
   try{
     const { id } = req.params
     const deletedTask = await Task.deleteOne({
@@ -97,15 +91,13 @@ router.delete("/delete/:id", isLoggedIn, async (req, res) => {
     })
   }
   catch(error){
-    res.status(400).json({
-      message: error.message
-    })
+    next(error)
   }
 })
 
 //update task api
 
-router.patch("/update/:id", isLoggedIn, async (req, res) => {
+router.patch("/update/:id", isLoggedIn, async (req, res, next) => {
   try{
     const { id } = req.params
     const { title, description, priority, status } = req.body
@@ -130,12 +122,9 @@ router.patch("/update/:id", isLoggedIn, async (req, res) => {
     })
   }
   catch(error){
-    res.status(400).json({
-      message: error.message
-    })
+    next(error)
   }
 })
-
 
 
 module.exports = {

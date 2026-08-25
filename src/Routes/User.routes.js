@@ -9,7 +9,7 @@ const { isLoggedIn } = require('../Middlewares/isLoggedInMiddleware.js')
 
 //signup api
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", async (req, res, next) => {
   try{
     const {firstname, lastname, username, email, password, DOB, gender} = req.body
 
@@ -37,13 +37,13 @@ router.post("/signup", async (req, res) => {
       message: "User created successfully!"
     })
   }catch(error){
-    res.status(400).json({'Error': error.message})
+    next(error)
   }
 })
 
 //login api
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req, res, next) => {
   try{
     const {username, email, password} = req.body
 
@@ -67,64 +67,69 @@ router.post("/login", async (req, res) => {
     //generate token
     let token = jsonwebtoken.sign({_id: isUserFound._id}, process.env.JWT_SECRET_KEY, {expiresIn: "2d"})
     res.status(200).cookie("token", token, {
-      // secure : true,
-      // httpOnly : true,
-      // sameSite : "strict",
+      secure : true,
+      httpOnly : true,
+      sameSite : "strict",
       maxAge: 48 * 60 * 60 * 1000
     }).json({message: "User logged in successfully!"})
   }
   catch(error){
-    res.status(400).json({"Error:": error.message})
+    next(error)
   }
 })
 
 //logout api
 
 router.post("/logout", async (req, res) => {
-  res.cookie("token", null).json({"message": "Logged out successfully!"})
+  res.cookie("token", null, {
+    secure : true,
+    httpOnly : true,
+    sameSite : "strict",
+    maxAge: 0
+  }).json({"message": "Logged out successfully!"})
 })
 
 
-// username, profile picture, organization editing api
-// we use protected routes from now for operations only available after logging in
+// user details edit api
 
-router.patch("/edit",isLoggedIn, async (req, res) => {
+router.patch("/edit",isLoggedIn, async (req, res, next) => {
   try{
     const loggedInUser = req.user
     const { username, profilePicture, organization } = req.body
-    if(!username?.trim() || !profilePicture?.trim() || !organization?.trim()){
-      throw new Error("Please enter all fields!")
+    const updateData = {}
+    if(username?.trim()){
+      updateData.username = username.trim()
+    }
+    if(profilePicture?.trim()){
+      updateData.profilePicture = profilePicture.trim()
+    }
+    if(organization?.trim()){
+      updateData.organization = organization.trim()
+    }
+    if(Object.keys(updateData).length === 0){
+      throw new Error("Please provide at least one field to update!")
     }
     const updatedUser = await User.findByIdAndUpdate(
-      loggedInUser._id
-    , {
-      username,
-      profilePicture,
-      organization
-    }, {
+      loggedInUser._id,
+      updateData, 
+    {
       returnDocument: "after",
       runValidators: true
     })
 
     res.status(200).json({
       "message": "Updated details successfully!",
-      "data": {
-        username: updatedUser.username,
-        profilePicture: updatedUser.profilePicture,
-        organization: updatedUser.organization
-      }
+      "data": updateData
     })
   }
   catch(error){
-    res.status(400).json({
-      "Error message": error.message
-    })
+    next(error)
   }
 })
 
 //change password api
 
-router.patch("/change-pass", isLoggedIn, async (req, res) => {
+router.patch("/change-pass", isLoggedIn, async (req, res, next) => {
   try{
     const {oldPassword, newPassword} = req.body
     const loggedInUser = req.user
@@ -136,39 +141,48 @@ router.patch("/change-pass", isLoggedIn, async (req, res) => {
     if(!isStrongNewPass){
       throw new Error("Please create a strong new password.")
     }
+    const isSamePass = await bcrypt.compare(newPassword, loggedInUser.password)
+    if(isSamePass){
+      throw new Error("New password must be different from your current password!")
+    }
     const saltRounds = 10
     const newHashedPass = await bcrypt.hash(newPassword, saltRounds)
     loggedInUser.password = newHashedPass
     await loggedInUser.save()
-    res.status(200).json({
-      message: "Password changed successfully!"
+    res.cookie("token", null, {
+      secure : true,
+      httpOnly : true,
+      sameSite : "strict",
+      maxAge: 0
+    }).status(200).json({
+      message: "Password changed successfully."
     })
   }catch(error){
-    res.status(400).json({
-      "message": error.message
-    })
+    next(error)
   }
 })
 
 //get user data
 
-router.get("/get-user-data", isLoggedIn, (req, res) => {
+router.get("/get-user-data", isLoggedIn, (req, res, next) => {
   try{
-    const { firstname, lastname, username, profilePicture } = req.user
+    const { firstname, lastname, username, email, profilePicture, DOB, gender, organization, createdAt } = req.user
     res.status(200).json({
-      "message": `Welcome back, ${username}!`,
       data: {
         firstname,
         lastname, 
         username, 
-        profilePicture
+        email,
+        profilePicture,
+        DOB,
+        gender,
+        organization,
+        createdAt
       }
     })
   }
   catch(error){
-    res.status(500).json({
-      "message": error.message
-    })
+    next(error)
   }
 })
 

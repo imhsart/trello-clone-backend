@@ -5,10 +5,10 @@ const { User } = require("../Models/User.schema.js")
 const isLoggedIn = async (req, res, next) => {
   try{
     const {token} = req.cookies
-    const jwtObj = jwt.decode(token, process.env.JWT_SECRET_KEY)
-    if(!jwtObj){
+    if(!token){
       throw new Error("Please login again!")
     }
+    const jwtObj = jwt.verify(token, process.env.JWT_SECRET_KEY)
     const foundUser = await User.findById(jwtObj._id)
     if(!foundUser){
       throw new Error("Please login again!")
@@ -17,8 +17,8 @@ const isLoggedIn = async (req, res, next) => {
     next()
   }
   catch(error){
-    res.status(404).json({
-      "Error message": error.message
+    res.status(401).json({
+      "message": error.message
     })
   }
 }

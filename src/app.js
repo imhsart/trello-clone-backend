@@ -1,11 +1,11 @@
 require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
-const { User } = require('./Models/User.schema.js')
 const { UserRouter } = require('./Routes/User.routes.js')
 const { TaskRouter } = require('./Routes/Task.routes.js')
 const cp = require('cookie-parser')
 const cors = require('cors')
+const {errorHandler} = require('./Middlewares/errorHandler.js')
 
 
 const app = express()
@@ -19,7 +19,7 @@ app.use(cp())
 app.use("/api/users",UserRouter)
 app.use("/api/tasks", TaskRouter)
 const PORT = process.env.PORT || 8080
-
+app.use(errorHandler)
 
 
 
