@@ -3,41 +3,42 @@ const mongoose = require('mongoose')
 const UserSchema = new mongoose.Schema({
   firstname: {
     type: String, 
-    minLength: 2,
-    maxLength: 15,
+    minlength: 2,
+    maxlength: 15,
     required: true,
     trim: true,
     immutable: true
   },
   lastname: {
     type: String,
-    minLength: 3,
+    minlength: 3,
     required: true,
-    maxLength: 15,
+    maxlength: 15,
     trim: true,
     immutable: true
   },
   username: {
     type: String,
     required: true,
-    minLength: 8,
-    maxLength: 20,
+    minlength: 8,
+    maxlength: 20,
     unique: true,
     trim: true,
+    lowercase: true,
     match: [/^[^\s]+$/, "Username cannot contain spaces"]
   }, 
   email: {
     type: String,
     trim: true,
     unique: true,
-    maxLength: 40,
+    maxlength: 40,
     required: true,
-    minLength: 12
+    minlength: 12,
+    lowercase: true
   },
   password: {
     type: String,
-    required: true,
-    trim: true,
+    required: true
   },
   profilePicture: {
     type: String,
@@ -61,8 +62,8 @@ const UserSchema = new mongoose.Schema({
   organization: {
     type: String,
     trim: true,
-    maxLength: 50,
-    minLength: 5
+    maxlength: 50,
+    minlength: 5
   }
 }, {timestamps: true})
 
