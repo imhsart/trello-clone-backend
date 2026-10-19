@@ -15,8 +15,8 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
     if(title.trim().length > 35){
       throw new Error("Max length of title must be atmost 35 characters.")
     }
-    if(description.trim().length > 100){
-      throw new Error("Max length of description must be atmost 100 characters.")
+    if(description.trim().length > 150){
+      throw new Error("Max length of description must be atmost 150 characters.")
     }
     const newTask = await Task.create({
       title,
