@@ -9,13 +9,13 @@ const { Task } = require("../Models/Task.schema.js")
 router.post("/create", isLoggedIn, async (req, res, next) => {
   try{
     const {title, description, priority, status} = req.body
-    if(!title.trim() || !description.trim() || !priority.trim() || !status.trim()){
+    if(!title?.trim() || !description?.trim() || !priority?.trim() || !status?.trim()){
       throw new Error("Please enter all values.")
     }
-    if(title.trim().length > 35){
+    if(title?.trim().length > 35){
       throw new Error("Max length of title must be atmost 35 characters.")
     }
-    if(description.trim().length > 150){
+    if(description?.trim().length > 150){
       throw new Error("Max length of description must be atmost 150 characters.")
     }
     const newTask = await Task.create({
@@ -101,7 +101,7 @@ router.patch("/update/:id", isLoggedIn, async (req, res, next) => {
   try{
     const { id } = req.params
     const { title, description, priority, status } = req.body
-    if(!title.trim() || !description.trim() || !priority.trim() || !status.trim()){
+    if(!title?.trim() || !description?.trim() || !priority?.trim() || !status?.trim()){
       throw new Error("Please enter all fields!")
     }
     const updatedTask = await Task.findOneAndUpdate({
@@ -116,6 +116,9 @@ router.patch("/update/:id", isLoggedIn, async (req, res, next) => {
       returnDocument: "after",
       runValidators: true
     })
+    if(!updatedTask){
+      throw new Error("No task found!")
+    }
     res.status(200).json({
       message: "Updated the task successfully!",
       data: updatedTask
